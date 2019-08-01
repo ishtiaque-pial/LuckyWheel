@@ -9,11 +9,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.DynamicLayout;
+import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -315,7 +318,7 @@ public class PielView extends View {
         Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
         mTextPaint.setTypeface(typeface);
         mTextPaint.setTextSize(mSecondaryTextSize);
-        mTextPaint.setTextAlign(Paint.Align.LEFT);
+        mTextPaint.setTextAlign(Paint.Align.RIGHT);
         mTextPaint.setColor(Color.WHITE);
 
 
@@ -326,15 +329,19 @@ public class PielView extends View {
 
         int x = (int) (mCenter + mRadius / 2 / 2 * Math.cos(angle));
         int y = (int) (mCenter + mRadius / 2 / 2 * Math.sin(angle));
-        Log.e("dfdsfdsf","left x "+(x+textWidth)+" left y "+y+" Right x "+(x-textWidth)+" Right y "+y);
-        RectF rect = new RectF(x + textWidth, y,
+        Log.e("dfdsfdsf","left x "+mRadius+" "+(x+200));
+        /*RectF rect = new RectF(x + textWidth, y,
                 x - textWidth, y);
 
         Path path = new Path();
         path.addRect(rect, Path.Direction.CW);
-        path.close();
+        path.close();*/
+        StaticLayout mTextLayout = new StaticLayout(mStrq, mTextPaint, canvas.getWidth(), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
         canvas.rotate(initFloat + (arraySize / 18f), x, y);
-        canvas.drawTextOnPath(mStrq, path, mTopTextPadding / 7f, mTextPaint.getTextSize() / 2.75f, mTextPaint);
+        //canvas.drawTextOnPath(mStrq, path, mTopTextPadding / 7f, mTextPaint.getTextSize() / 2.75f, mTextPaint);
+        //canvas.drawText(mStrq,x-100,y,mTextPaint);
+        canvas.translate(x+200, y-30);
+        mTextLayout.draw(canvas);
         canvas.restore();
 
 

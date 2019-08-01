@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         final LuckyWheelView luckyWheelView = (LuckyWheelView) findViewById(R.id.luckyWheel);
 
         LuckyItem luckyItem1 = new LuckyItem();
-        luckyItem1.secondaryText = "100000000000";
+        luckyItem1.secondaryText = "ishtiaque\n morshed pial ";
         //luckyItem1.icon = R.drawable.test1;
         luckyItem1.color = Color.parseColor("#FE3325");
         data.add(luckyItem1);
@@ -116,14 +116,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int index = getRandomIndex();
-                luckyWheelView.startLuckyWheelWithTargetIndex(getRandomIndex());
+                luckyWheelView.startLuckyWheelWithTargetIndex(0);
             }
         });
 
         luckyWheelView.setLuckyRoundItemSelectedListener(new LuckyWheelView.LuckyRoundItemSelectedListener() {
             @Override
             public void LuckyRoundItemSelected(int index) {
-                Toast.makeText(getApplicationContext(), data.get(index).topText, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), data.get(index).secondaryText, Toast.LENGTH_SHORT).show();
             }
         });
     }
