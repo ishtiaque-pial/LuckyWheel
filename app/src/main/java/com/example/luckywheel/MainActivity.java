@@ -4,9 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.luckywheel.apiManager.ApiService;
+import com.example.luckywheel.apiManager.RetrofitClint;
+import com.example.luckywheel.apiManager.WheelPojo;
 import com.example.luckywheel.library.LuckyWheelView;
 import com.example.luckywheel.library.model.LuckyItem;
 
@@ -14,17 +18,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     List<LuckyItem> data = new ArrayList<>();
+    private ApiService apiService;
+    private LuckyWheelView luckyWheelView;
+    private int indexxx=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        apiService = RetrofitClint.getApiServiceWithoutHeader();
 
-        final LuckyWheelView luckyWheelView = (LuckyWheelView) findViewById(R.id.luckyWheel);
+        callApi();
 
-        LuckyItem luckyItem1 = new LuckyItem();
+        luckyWheelView = (LuckyWheelView) findViewById(R.id.luckyWheel);
+
+        /*LuckyItem luckyItem1 = new LuckyItem();
         luckyItem1.secondaryText = "ishtiaque\n morshed pial ";
         //luckyItem1.icon = R.drawable.test1;
         luckyItem1.color = Color.parseColor("#FE3325");
@@ -104,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         /////////////////////
 
         luckyWheelView.setData(data);
-        luckyWheelView.setRound(10);
+        luckyWheelView.setRound(10);*/
 
         /*luckyWheelView.setLuckyWheelBackgrouldColor(0xff0000ff);
         luckyWheelView.setLuckyWheelTextColor(0xffcc0000);
@@ -116,7 +130,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int index = getRandomIndex();
-                luckyWheelView.startLuckyWheelWithTargetIndex(0);
+                callApiAgain();
+
+            }
+        });
+        findViewById(R.id.ok2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                luckyWheelView.stopLuckyWheel();
+
             }
         });
 
@@ -124,6 +146,67 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void LuckyRoundItemSelected(int index) {
                 Toast.makeText(getApplicationContext(), data.get(index).secondaryText, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void callApiAgain() {
+        Call<WheelPojo> wheelPojoCall = apiService.WHEEL_POJO_CALL();
+        wheelPojoCall.enqueue(new Callback<WheelPojo>() {
+            @Override
+            public void onResponse(Call<WheelPojo> call, Response<WheelPojo> response) {
+                for (int i=0;i<response.body().getResponse().getWheels().size();i++) {
+                    if (response.body().getResponse().getSelected().equals(response.body().getResponse().getWheels().get(i).getCode())){
+                        indexxx =i;
+                    }
+                }
+                luckyWheelView.startLuckyWheelWithTargetIndex(indexxx);
+            }
+
+            @Override
+            public void onFailure(Call<WheelPojo> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void callApi() {
+        Call<WheelPojo> wheelPojoCall = apiService.WHEEL_POJO_CALL();
+        wheelPojoCall.enqueue(new Callback<WheelPojo>() {
+            @Override
+            public void onResponse(Call<WheelPojo> call, Response<WheelPojo> response) {
+                for (int i=0;i<response.body().getResponse().getWheels().size();i++) {
+                    LuckyItem luckyItem = new LuckyItem();
+                    if (response.body().getResponse().getWheels().get(i).getName().contains("Night")) {
+                        String[] value = response.body().getResponse().getWheels().get(i).getName().split("Night");
+                        String finalString = value[0]+" Night-\n"+value[1];
+                        luckyItem.secondaryText = finalString;
+                    } else if(response.body().getResponse().getWheels().get(i).getName().contains("&")){
+                        String[] value = response.body().getResponse().getWheels().get(i).getName().split("&");
+                        String finalString = value[0]+" &-\n"+value[1];
+                        luckyItem.secondaryText = finalString;
+                    } else if (response.body().getResponse().getWheels().get(i).getName().contains("Pattaya")){
+                        String[] value = response.body().getResponse().getWheels().get(i).getName().split("Pattaya");
+                        String finalString = value[0]+"-\nPattaya";
+                        luckyItem.secondaryText = finalString;
+                    } else {
+                        luckyItem.secondaryText = response.body().getResponse().getWheels().get(i).getName();
+                    }
+                    if (i%2==0) {
+                        luckyItem.color = Color.parseColor("#FE3325");
+                    } else {
+                        luckyItem.color = Color.parseColor("#F57d17");
+                    }
+
+                    data.add(luckyItem);
+                }
+                luckyWheelView.setData(data);
+                luckyWheelView.setRound(10);
+            }
+
+            @Override
+            public void onFailure(Call<WheelPojo> call, Throwable t) {
+
             }
         });
     }

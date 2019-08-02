@@ -180,6 +180,9 @@ public class LuckyWheelView extends RelativeLayout implements PielView.PieRotate
     public void startLuckyWheelWithTargetIndex(int index) {
         pielView.rotateTo(index);
     }
+    public void stopLuckyWheel() {
+        pielView.cancelRoting();
+    }
 
     public void startLuckyWheelWithRandomTarget() {
         Random r = new Random();

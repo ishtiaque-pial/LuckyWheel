@@ -24,7 +24,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.OrientationEventListener;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
@@ -63,6 +65,7 @@ public class PielView extends View {
     private int defaultBackgroundColor = 0;
     private Drawable drawableCenterImage;
     private int textColor = 0;
+    private ViewPropertyAnimator viewPropertyAnimator;
 
     private int predeterminedNumber = -1;
 
@@ -93,6 +96,7 @@ public class PielView extends View {
     }
 
     private void init() {
+        viewPropertyAnimator = animate();
         mArcPaint = new Paint();
         mArcPaint.setAntiAlias(true);
         mArcPaint.setDither(true);
@@ -340,7 +344,7 @@ public class PielView extends View {
         canvas.rotate(initFloat + (arraySize / 18f), x, y);
         //canvas.drawTextOnPath(mStrq, path, mTopTextPadding / 7f, mTextPaint.getTextSize() / 2.75f, mTextPaint);
         //canvas.drawText(mStrq,x-100,y,mTextPaint);
-        canvas.translate(x+200, y-30);
+        canvas.translate(x+150, y-30);
         mTextLayout.draw(canvas);
         canvas.restore();
 
@@ -390,11 +394,13 @@ public class PielView extends View {
         rotateTo(index, (rand.nextInt() * 3) % 2, true);
     }
 
-    /**
-     * @param index
-     * @param rotation,  spin orientation of the wheel if clockwise or counterclockwise
-     * @param startSlow, either animates a slow start or an immediate turn based on the trigger
-     */
+
+
+    public void cancelRoting() {
+       if (viewPropertyAnimator!=null) {
+           viewPropertyAnimator.cancel();
+       }
+    }
     @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     public void rotateTo(final int index, @SpinRotation final int rotation, boolean startSlow) {
         if (isRunning) {
@@ -410,7 +416,7 @@ public class PielView extends View {
             TimeInterpolator animationStart = startSlow ? new AccelerateInterpolator() : new LinearInterpolator();
             //The multiplier is to do a big rotation again if the position is already near 360.
             float multiplier = getRotation() > 200f ? 2 : 1;
-            animate()
+            viewPropertyAnimator
                     .setInterpolator(animationStart)
                     .setDuration(500L)
                     .setListener(new Animator.AnimatorListener() {
@@ -444,8 +450,8 @@ public class PielView extends View {
         if (rotationAssess < 0) mRoundOfNumber++;
 
         float targetAngle = ((360f * mRoundOfNumber * rotationAssess) + 270f - getAngleOfIndexTarget(index) - (360f / mLuckyItemList.size()) / 2);
-
-        animate()
+        Log.e("gfghfgh",""+targetAngle);
+        viewPropertyAnimator
                 .setInterpolator(new DecelerateInterpolator())
                 .setDuration(mRoundOfNumber * 1000 + 900L)
                 .setListener(new Animator.AnimatorListener() {
