@@ -29,7 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.example.luckywheel.BuildConfig.DEBUG;
 
 public class RetrofitClint {
-    private static final String BASE_URL = "http://192.168.0.102:3000/";
+    private static final String BASE_URL = "http://127.0.0.1:3000/";
 
 
     private static OkHttpClient provideClient(final Context context) {

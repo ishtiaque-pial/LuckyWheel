@@ -447,7 +447,7 @@ public class PielView extends View {
 
         // This addition of another round count for counterclockwise is to simulate the perception of the same number of spin
         // if you still need to reach the same outcome of a positive degrees rotation with the number of rounds reversed.
-        if (rotationAssess < 0) mRoundOfNumber++;
+        //if (rotationAssess < 0) mRoundOfNumber++;
 
         float targetAngle = ((360f * mRoundOfNumber * rotationAssess) + 270f - getAngleOfIndexTarget(index) - (360f / mLuckyItemList.size()) / 2);
         Log.e("gfghfgh",""+targetAngle);

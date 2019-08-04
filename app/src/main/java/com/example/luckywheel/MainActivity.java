@@ -3,7 +3,9 @@ package com.example.luckywheel;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -28,17 +30,16 @@ public class MainActivity extends AppCompatActivity {
     private ApiService apiService;
     private LuckyWheelView luckyWheelView;
     private int indexxx=0;
+    private MediaPlayer mp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         apiService = RetrofitClint.getApiServiceWithoutHeader();
 
-        callApi();
-
         luckyWheelView = (LuckyWheelView) findViewById(R.id.luckyWheel);
 
-        /*LuckyItem luckyItem1 = new LuckyItem();
+        LuckyItem luckyItem1 = new LuckyItem();
         luckyItem1.secondaryText = "ishtiaque\n morshed pial ";
         //luckyItem1.icon = R.drawable.test1;
         luckyItem1.color = Color.parseColor("#FE3325");
@@ -118,7 +119,9 @@ public class MainActivity extends AppCompatActivity {
         /////////////////////
 
         luckyWheelView.setData(data);
-        luckyWheelView.setRound(10);*/
+        luckyWheelView.setRound(10);
+
+        mp = MediaPlayer.create(this, R.raw.tick);
 
         /*luckyWheelView.setLuckyWheelBackgrouldColor(0xff0000ff);
         luckyWheelView.setLuckyWheelTextColor(0xffcc0000);
@@ -130,7 +133,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int index = getRandomIndex();
-                callApiAgain();
+                //callApiAgain();
+                luckyWheelView.startLuckyWheelWithTargetIndex(10);
+                final int initialDt = 0;
+                final Handler handler = new Handler();
+                final Runnable r = new Runnable() {
+                    int dt = initialDt;
+                    public void run() {
+
+                        if (dt <= 5000) {
+                            mp.start();
+                            dt =dt+50;
+                            handler.postDelayed(this, 50);
+                        } else if (dt<=8000) {
+                            mp.start();
+                            dt = dt +200;
+                            handler.postDelayed(this, 200);
+                        } else if (dt<=11000){
+                            mp.start();
+                            dt = dt +300;
+                            handler.postDelayed(this, 300);
+                        }
+                    }
+                };
+                handler.postDelayed(r, initialDt);
 
             }
         });
